@@ -3,7 +3,7 @@
 pub type size_t = ::std::os::raw::c_ulong;
 
 #[no_mangle]
-pub extern "C" fn store(vals: *const u16, len: size_t) {
+extern "C" fn store(vals: *const u16, len: size_t) {
     let a = unsafe { std::slice::from_raw_parts(vals, len as usize) };
     println!("store {:?}", a);
 }
@@ -23,5 +23,6 @@ fn main() {
         adc_callback(vals.as_ptr(), vals.len() as size_t);
         decompress(vals.as_ptr(), out.as_mut_ptr(), vals.len() as size_t);
     }
+    println!("out: {:?}", out);
     assert_eq!(out, expect)
 }
