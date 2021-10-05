@@ -13,5 +13,3 @@ void decompress(const uint8_t* const values, uint16_t* out, size_t len_values, s
         out[i] = values[i*2] | values[i*2+1] << 8;
     }
 }
-
-

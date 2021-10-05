@@ -46,16 +46,20 @@ fn main() {
     let mut out = vec![0; vals.len()];
     let expect = vals.clone();
 
-    println!("adc_callback: {:?}", vals);
     unsafe {
         adc_callback(vals.as_ptr(), vals.len() as size_t);
         let buf = STORAGE.lock().unwrap();
         decompress(buf.as_ptr(), out.as_mut_ptr(), buf.len() as size_t, out.len() as size_t);
+        assert_eq!(out.len(), expect.len())
     }
+    let error_sum: i128 = expect.iter()
+        .zip(&out)
+        .map(|(a, b)| (*a as i128, *b as i128))
+        .map(|(a, b)| (a-b)*(a-b))
+        .sum();
+
+    println!("adc_callback: {:?}", vals);
     println!("out: {:?}", out);
-    if out == expect {
-        println!("OK")
-    } else {
-        println!("MISSMATCH")
-    }
+    println!("COMPRESSION RATIO: {}", STORAGE.lock().unwrap().len() as f64 / (expect.len() as f64 * 2.0));
+    println!("MEAN ERROR: {}", error_sum as f64 / expect.len() as f64);
 }
